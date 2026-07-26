@@ -253,5 +253,5 @@ If you find NômNay helpful, please consider:
 
 Made with ❤️ for preserving Vietnamese heritage
 
-Last Updated: January 2024
+Last Updated: July 25, 2026
 ================================================================================
