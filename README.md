@@ -52,8 +52,7 @@ just a few keystrokes.
   - Persistent storage (localStorage)
 
 🌍 MULTI-LANGUAGE SUPPORT
-  - Vietnamese (vi)
-  - English (en)
+  - Vietnamese (quốc ngữ) to Vietnamese (chunom)
   - More coming soon!
 
 📱 RESPONSIVE DESIGN
