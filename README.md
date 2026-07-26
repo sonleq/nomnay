@@ -7,8 +7,8 @@
 Version: 1.0.0
 License: MIT
 Author: Son Le
-Website: https://nomnay.com
-GitHub: https://github.com/yourusername/nomnay
+Website: coming soon...
+GitHub: coming soon...
 
 ================================================================================
                               TABLE OF CONTENTS
@@ -310,7 +310,7 @@ This project is licensed under the MIT License.
 
 MIT License
 
-Copyright (c) 2024 [Your Full Name]
+Copyright (c) 2024 Son Le
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -340,9 +340,9 @@ Twitter: @yourhandle
 LinkedIn: yourprofile
 
 Project Links:
-  Website:  https://nomnay.com
-  GitHub:   https://github.com/yourusername/nomnay
-  Issues:   https://github.com/yourusername/nomnay/issues
+  Website:  coming soon...
+  GitHub:   coming soon...
+  Issues:   coming soon...
 
 ================================================================================
                                 ACKNOWLEDGMENTS
