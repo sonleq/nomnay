@@ -1,5 +1,3 @@
-================================================================================ 📜 NÔMNAY Nôm Now — Modern Chữ Nôm Translator
-Version: 1.0.0 License: MIT Author: Son Le
 
 ================================================================================ WHAT IS NÔMNAY?
 Nôm Nay — Modern Chữ Nôm Translator
