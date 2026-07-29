@@ -1,1 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chunom Dictionary - Tra cứu Chữ Nôm</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',-apple-system,sans-serif;background:#f8f9fc;color:#1a1a2e;min-height:100vh;padding:20px}
+    .container{max-width:1200px;margin:0 auto}
+    .header{text-align:center;padding:30px 20px 20px;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-radius:16px;margin-bottom:20px;color:#fff;box-shadow:0 10px 40px rgba(26,26,46,.3)}
+    .header h1{font-family:'Noto Serif TC',serif;font-size:2.5rem;font-weight:700;margin-bottom:8px;letter-spacing:2px}
+    .header h1 span{color:#f7d44a}
+    .header p{font-weight:300;opacity:.8;font-size:1.1rem}
+    .header .badge{display:inline-block;background:rgba(247,212,74,.2);padding:6px 16px;border-radius:20px;font-size:.85rem;margin-top:10px;border:1px solid rgba(247,212,74,.3)}
+    .header .keyboard-hint{margin-top:12px;font-size:.8rem;opacity:.7;background:rgba(255,255,255,.1);padding:6px 16px;border-radius:20px;display:inline-block}
+    .header .keyboard-hint kbd{background:rgba(255,255,255,.2);padding:2px 8px;border-radius:4px;font-family:'Inter',monospace;font-size:.75rem;margin:0 2px}
+    .toggle-row{display:flex;align-items:center;justify-content:center;gap:16px;padding:12px 20px;background:#fff;border-radius:12px;margin-bottom:20px;border:1px solid #e5e7eb;flex-wrap:wrap}
+    .toggle-row .toggle-label{font-weight:500;font-size:.9rem;color:#4b5563}
+    .toggle-switch{position:relative;width:52px;height:28px;background:#d1d5db;border-radius:14px;cursor:pointer;transition:background .3s;flex-shrink:0}
+    .toggle-switch.active{background:#4f46e5}
+    .toggle-switch .toggle-knob{position:absolute;top:3px;left:3px;width:22px;height:22px;background:#fff;border-radius:50%;transition:transform .3s;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+    .toggle-switch.active .toggle-knob{transform:translateX(24px)}
+    .toggle-row .toggle-status{font-size:.85rem;color:#6b7280;font-weight:500;min-width:140px}
+    .toggle-row .toggle-status .highlight{color:#4f46e5;font-weight:600}
+    .font-controls{display:flex;align-items:center;justify-content:center;gap:20px;padding:10px 20px;background:#fff;border-radius:12px;margin-bottom:20px;border:1px solid #e5e7eb;flex-wrap:wrap}
+    .font-controls label{font-size:.85rem;font-weight:500;color:#4b5563}
+    .font-controls input[type=range]{width:120px;accent-color:#4f46e5;cursor:pointer}
+    .font-controls .font-value{font-weight:600;color:#4f46e5;min-width:40px;text-align:center;font-size:.9rem}
+    .font-controls .weight-btns{display:flex;gap:6px}
+    .font-controls .weight-btn{padding:4px 12px;border:2px solid #e5e7eb;border-radius:6px;background:#fff;cursor:pointer;font-size:.75rem;font-weight:500;transition:all .2s;font-family:'Inter',sans-serif;color:#4b5563}
+    .font-controls .weight-btn:hover{border-color:#4f46e5;color:#4f46e5}
+    .font-controls .weight-btn.active{background:#4f46e5;border-color:#4f46e5;color:#fff}
+    .stats-bar{display:flex;justify-content:center;gap:40px;padding:15px 20px;background:#fff;border-radius:12px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);flex-wrap:wrap}
+    .stats-bar .stat-item{text-align:center}
+    .stats-bar .stat-number{font-size:1.8rem;font-weight:700;color:#1a1a2e;display:block}
+    .stats-bar .stat-label{font-size:.8rem;color:#6b7280;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+    .search-section{background:#fff;border-radius:16px;padding:25px 30px;margin-bottom:20px;border:1px solid #e5e7eb}
+    .search-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    .search-wrapper{flex:1;min-width:250px;position:relative}
+    .search-wrapper input{width:100%;padding:14px 20px 14px 48px;font-size:1.05rem;border:2px solid #e5e7eb;border-radius:12px;background:#fafbfc;transition:all .3s;font-family:'Inter',sans-serif}
+    .search-wrapper input:focus{outline:0;border-color:#4f46e5;background:#fff;box-shadow:0 0 0 4px rgba(79,70,229,.1)}
+    .search-wrapper input::placeholder{color:#9ca3af}
+    .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:1.2rem;color:#9ca3af}
+    .filter-buttons{display:flex;gap:8px;flex-wrap:wrap}
+    .filter-btn{padding:10px 18px;border:2px solid #e5e7eb;border-radius:10px;background:#fff;cursor:pointer;font-size:.85rem;font-weight:500;transition:all .2s;color:#6b7280;font-family:'Inter',sans-serif}
+    .filter-btn:hover{border-color:#4f46e5;color:#4f46e5}
+    .filter-btn.active{background:#4f46e5;border-color:#4f46e5;color:#fff}
+    .output-section{background:#fff;border-radius:16px;padding:20px 25px;margin-bottom:20px;border:1px solid #e5e7eb}
+    .output-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:10px;border-bottom:2px solid #f3f4f6;flex-wrap:wrap;gap:8px}
+    .output-header h2{font-size:1rem;font-weight:600;color:#1a1a2e}
+    .output-header .output-actions{display:flex;gap:6px}
+    .output-header .output-actions button{padding:4px 14px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;cursor:pointer;font-size:.78rem;font-weight:500;color:#4b5563;transition:all .2s;font-family:'Inter',sans-serif}
+    .output-header .output-actions button:hover{border-color:#4f46e5;color:#4f46e5;background:#f8f7ff}
+    .output-modern{direction:ltr;text-align:left;font-family:'Noto Serif TC','Han Nom',serif;font-size:2.2rem;line-height:1.8;min-height:80px;padding:16px 20px;background:#fafbfc;border-radius:12px;border:2px solid #e5e7eb;word-wrap:break-word;transition:all .4s ease}
+    .output-modern .char-item{display:inline-block;margin:2px 4px;padding:2px 6px;cursor:pointer;border-radius:4px;transition:background .2s;font-size:2.2rem;position:relative}
+    .output-modern .char-item:hover{background:#e0e7ff}
+    .output-modern .char-item .quoc-ngu-hint{display:block;font-size:.5rem;color:#9ca3af;text-align:center;font-family:'Inter',sans-serif;font-weight:400}
+    .output-modern .char-number,.output-traditional .char-number{position:absolute;top:-10px;right:-10px;background:#4f46e5;color:#fff;font-size:.6rem;font-weight:700;padding:2px 6px;border-radius:10px;font-family:'Inter',monospace;min-width:18px;text-align:center;z-index:5;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+    .output-modern .char-item{position:relative;padding:6px 10px 2px 6px}
+    .output-traditional .char-item{position:relative;padding:6px 10px 2px 6px}
+    .output-traditional .char-number{top:-6px;right:50%;transform:translateX(50%)}
+    .output-modern .word-separator{display:inline-block;width:8px}
+    .output-modern .unknown-word{color:#9ca3af;font-family:'Inter',sans-serif;font-size:.95rem;font-weight:400;padding:0 4px}
+    .output-traditional{direction:rtl;writing-mode:vertical-rl;text-orientation:upright;font-family:'Noto Serif TC','Han Nom',serif;font-size:2.2rem;line-height:2.4;min-height:200px;max-height:400px;padding:20px 25px;background:#faf8f0;border:2px solid #d4a574;border-radius:4px;box-shadow:inset 0 0 40px rgba(212,165,116,.06);transition:all .4s ease;overflow-y:auto;display:flex;flex-direction:row;flex-wrap:wrap;align-content:flex-start;justify-content:flex-start;gap:0;position:relative}
+    .output-traditional::-webkit-scrollbar{width:6px}
+    .output-traditional::-webkit-scrollbar-track{background:#f1f1f1;border-radius:3px}
+    .output-traditional::-webkit-scrollbar-thumb{background:#d4a574;border-radius:3px}
+    .output-traditional::before{content:'';position:absolute;top:8px;left:8px;right:8px;bottom:8px;border:1px solid rgba(212,165,116,.12);pointer-events:none;border-radius:2px}
+    .output-traditional .column-group{display:flex;flex-direction:column;align-items:center;padding:0 4px;flex-shrink:0;position:relative}
+    .output-traditional .char-item{display:block;padding:4px 8px;cursor:pointer;border-radius:4px;transition:all .25s ease;font-size:2.2rem;writing-mode:vertical-rl;text-orientation:upright;color:#1a1a2e;position:relative;letter-spacing:4px;text-align:center;flex-shrink:0;padding-top:18px}
+    .output-traditional .char-item:hover{background:rgba(79,70,229,.12);transform:scale(1.05);box-shadow:0 4px 16px rgba(79,70,229,.15);z-index:2}
+    .output-traditional .char-item .quoc-ngu-hint{display:block;font-size:.5rem;color:#8b7355;text-align:center;font-family:'Inter',sans-serif;font-weight:400;writing-mode:horizontal-tb;margin-top:4px;letter-spacing:1px;opacity:.6;transition:opacity .3s}
+    .output-traditional .char-item:hover .quoc-ngu-hint{opacity:1;color:#4f46e5}
+    .output-traditional .column-break{display:inline-block;width:12px;min-height:100%;flex-shrink:0;margin:0 2px}
+    .output-traditional .unknown-word{color:#b8860b;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:400;writing-mode:horizontal-tb;padding:4px 12px;background:rgba(184,134,11,.06);border-radius:4px;border:1px dashed rgba(184,134,11,.2)}
+    .output-empty{color:#9ca3af;font-family:'Inter',sans-serif;font-size:.95rem;font-weight:400;display:flex;align-items:center;justify-content:center;min-height:80px;gap:8px}
+    .output-empty .icon{font-size:1.5rem}
+    .output-traditional .output-empty{writing-mode:horizontal-tb;flex-direction:column;min-height:200px}
+    .results-section{background:#fff;border-radius:16px;padding:20px 25px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid #e5e7eb;min-height:200px}
+    .results-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #f3f4f6;flex-wrap:wrap;gap:10px}
+    .results-header h2{font-size:1.1rem;font-weight:600;color:#1a1a2e}
+    .result-count{font-size:.85rem;color:#6b7280;background:#f3f4f6;padding:4px 14px;border-radius:20px}
+    .grid-view{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+    .entry-card{background:#fafbfc;border:1px solid #e5e7eb;border-radius:12px;padding:14px 18px;transition:all .2s;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+    .entry-card:hover{border-color:#4f46e5;background:#f8f7ff;transform:translateY(-2px);box-shadow:0 4px 12px rgba(79,70,229,.1)}
+    .entry-card .quoc-ngu{font-size:.95rem;font-weight:500;color:#1a1a2e}
+    .entry-card .chunom{font-family:'Noto Serif TC','Han Nom',serif;font-size:1.5rem;color:#4f46e5;font-weight:600;text-align:right}
+    .entry-card .chunom span{cursor:pointer;padding:0 3px}
+    .entry-card .chunom span:hover{background:#e0e7ff;border-radius:4px}
+    .list-view .entry-row{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #f3f4f6;transition:background .15s;cursor:pointer;gap:16px;flex-wrap:wrap}
+    .list-view .entry-row:hover{background:#f8f7ff}
+    .list-view .entry-row .quoc-ngu{font-size:.95rem;font-weight:500;color:#1a1a2e;flex:1;min-width:150px}
+    .list-view .entry-row .chunom{font-family:'Noto Serif TC','Han Nom',serif;font-size:1.4rem;color:#4f46e5;text-align:right}
+    .list-view .entry-row .chunom span{cursor:pointer;padding:0 3px}
+    .list-view .entry-row .chunom span:hover{background:#e0e7ff;border-radius:4px}
+    .selected-section{background:#fff;border-radius:16px;padding:20px 25px;margin-top:20px;border:2px dashed #d1d5db;transition:all .3s;min-height:80px}
+    .selected-section.has-items{border-color:#4f46e5;border-style:solid;background:#f8f7ff}
+    .selected-label{font-size:.85rem;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+    .selected-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
+    .selected-actions button{padding:6px 16px;border:none;border-radius:6px;cursor:pointer;font-size:.8rem;font-weight:500;transition:all .2s;font-family:'Inter',sans-serif}
+    .btn-break{background:#f59e0b;color:#fff}
+    .btn-break:hover{background:#d97706}
+    .clear-btn{background:#ef4444;color:#fff}
+    .clear-btn:hover{background:#dc2626}
+    .export-btn{padding:6px 16px;border:none;border-radius:6px;background:#10b981;color:#fff;cursor:pointer;font-size:.8rem;font-weight:500;font-family:'Inter',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:4px}
+    .export-btn:hover:not(:disabled){background:#059669;transform:translateY(-1px)}
+    .export-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    .export-dropdown{position:relative;display:inline-block}
+    .export-dropdown-content{display:none;position:absolute;right:0;top:100%;background:#fff;min-width:170px;box-shadow:0 8px 24px rgba(0,0,0,.15);border-radius:8px;z-index:100;margin-top:4px;border:1px solid #e5e7eb;overflow:hidden}
+    .export-dropdown-content.show{display:block;animation:slideDown .2s ease}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+    .export-dropdown-content button{display:block;width:100%;padding:10px 16px;border:none;background:0 0;text-align:left;font-size:.85rem;font-family:'Inter',sans-serif;cursor:pointer;color:#1a1a2e;transition:background .15s}
+    .export-dropdown-content button:hover{background:#f8f7ff}
+    
+    /* ===== SELECTED MODERN - FIXED (no max-height) ===== */
+    .selected-modern {
+      font-family: 'Noto Serif TC', 'Han Nom', serif;
+      font-size: 2.5rem;
+      line-height: 1.6;
+      min-height: 50px;
+      padding: 8px;
+      word-wrap: break-word;
+      transition: all 0.4s ease;
+      direction: ltr;
+    }
+    .selected-modern .char-item{display:inline-block;margin:2px 4px;padding:2px 10px;background:#e0e7ff;border-radius:6px;cursor:pointer;transition:background .2s;font-size:2.5rem}
+    .selected-modern .char-item:hover{background:#fef2f2}
+    .selected-modern .char-item .remove-icon{font-size:.6rem;color:#6b7280;margin-left:4px}
+    .selected-modern .column-break-indicator{display:inline-block;margin:2px 8px;color:#f59e0b;font-size:1.5rem;font-family:'Inter',sans-serif;font-weight:300}
+    
+    /* ===== SELECTED TRADITIONAL - FIXED (no max-height, no scroll) ===== */
+    .selected-traditional {
+      font-family: 'Noto Serif TC', 'Han Nom', serif;
+      font-size: 2.5rem;
+      line-height: 2.2;
+      min-height: 50px;
+      padding: 16px 20px;
+      background: #faf8f0;
+      border: 2px solid #d4a574;
+      border-radius: 4px;
+      box-shadow: inset 0 0 40px rgba(212, 165, 116, 0.06);
+      transition: all 0.4s ease;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      justify-content: flex-start;
+      gap: 0;
+      position: relative;
+      direction: rtl;
+    }
+    .selected-traditional .column-group{display:flex;flex-direction:column;align-items:center;padding:0 4px;flex-shrink:0}
+    .selected-traditional .char-item{display:block;padding:4px 8px;cursor:pointer;border-radius:4px;transition:all .25s ease;font-size:2.5rem;writing-mode:vertical-rl;text-orientation:upright;color:#1a1a2e;position:relative;letter-spacing:4px;text-align:center;background:0 0;margin:0;flex-shrink:0}
+    .selected-traditional .char-item:hover{background:rgba(79,70,229,.12);transform:scale(1.05);box-shadow:0 4px 16px rgba(79,70,229,.15);z-index:2}
+    .selected-traditional .char-item .remove-icon{display:block;font-size:.5rem;color:#8b7355;text-align:center;font-family:'Inter',sans-serif;font-weight:400;writing-mode:horizontal-tb;margin-top:4px;letter-spacing:1px;opacity:.5;transition:opacity .3s}
+    .selected-traditional .char-item:hover .remove-icon{opacity:1;color:#ef4444}
+    .selected-traditional .column-break{display:inline-block;width:12px;min-height:100%;flex-shrink:0;margin:0 2px}
+    
+    .pagination{display:flex;justify-content:center;gap:6px;padding:20px 0 10px;flex-wrap:wrap}
+    .pagination button{padding:8px 14px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;cursor:pointer;font-size:.85rem;font-weight:500;transition:all .2s;font-family:'Inter',sans-serif;color:#4b5563}
+    .pagination button:hover:not(:disabled){border-color:#4f46e5;color:#4f46e5}
+    .pagination button.active{background:#4f46e5;border-color:#4f46e5;color:#fff}
+    .pagination button:disabled{opacity:.4;cursor:not-allowed}
+    .loading{text-align:center;padding:40px;color:#6b7280}
+    .loading .spinner{display:inline-block;width:40px;height:40px;border:4px solid #f3f4f6;border-top-color:#4f46e5;border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);padding:10px 24px;background:#1a1a2e;color:#fff;border-radius:10px;font-size:.9rem;z-index:1000;box-shadow:0 4px 20px rgba(0,0,0,.3);opacity:0;transition:all .4s ease;font-family:'Inter',sans-serif;white-space:nowrap}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    @media(max-width:768px){.header h1{font-size:1.8rem}.search-wrapper{min-width:100%}.filter-buttons{width:100%;justify-content:center}.grid-view{grid-template-columns:1fr}.stats-bar{gap:20px}.stats-bar .stat-number{font-size:1.4rem}.output-modern .char-item{font-size:1.8rem}.output-traditional .char-item{font-size:1.8rem}.selected-modern{font-size:2rem}.selected-modern .char-item{font-size:2rem}.selected-traditional{font-size:2rem}.selected-traditional .char-item{font-size:2rem}.font-controls{gap:12px}.font-controls input[type=range]{width:80px}}
+    @media(max-width:480px){.header h1{font-size:1.4rem}.search-section{padding:15px}.results-section{padding:15px}.output-section{padding:15px}.output-modern .char-item{font-size:1.4rem}.output-traditional .char-item{font-size:1.4rem}.selected-modern{font-size:1.5rem}.selected-modern .char-item{font-size:1.5rem}.selected-traditional{font-size:1.5rem}.selected-traditional .char-item{font-size:1.5rem}.font-controls input[type=range]{width:60px}}
+  </style>
+</head>
+<body>
 
+<div class="container">
+  <div class="header">
+    <h1>📜 <span>Chunom</span> Dictionary</h1>
+    <p>Tra cứu Chữ Nôm — Hán Nôm</p>
+    <div class="badge">✨ Click any character to select</div>
+    <div class="keyboard-hint">⌨️ Type a word → press <kbd>1</kbd>-<kbd>9</kbd> to select &nbsp;|&nbsp; Press <kbd>Enter</kbd> for new column</div>
+  </div>
+
+  <div class="toggle-row">
+    <span class="toggle-label">📐 Display Mode:</span>
+    <div class="toggle-switch" id="layoutToggle" onclick="toggleLayout()"><div class="toggle-knob"></div></div>
+    <span class="toggle-status" id="layoutStatus"><span class="highlight">Modern</span> (Left → Right)</span>
+  </div>
+
+  <div class="font-controls">
+    <label>🔤 Font Size:</label>
+    <input type="range" id="fontSizeSlider" min="1" max="6" step="0.5" value="2.5">
+    <span class="font-value" id="fontSizeDisplay">2.5rem</span>
+    <label>💪 Weight:</label>
+    <div class="weight-btns">
+      <button class="weight-btn" data-weight="300" onclick="setFontWeight(300)">Light</button>
+      <button class="weight-btn active" data-weight="600" onclick="setFontWeight(600)">Medium</button>
+      <button class="weight-btn" data-weight="900" onclick="setFontWeight(900)">Bold</button>
+    </div>
+  </div>
+
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-item"><span class="stat-number" id="totalEntries">0</span><span class="stat-label">Entries</span></div>
+    <div class="stat-item"><span class="stat-number" id="totalCharacters">0</span><span class="stat-label">Characters</span></div>
+    <div class="stat-item"><span class="stat-number" id="selectedCount">0</span><span class="stat-label">Selected</span></div>
+  </div>
+
+  <div class="search-section">
+    <div class="search-row">
+      <div class="search-wrapper"><span class="search-icon">🔍</span><input type="text" id="searchInput" placeholder="Type Quốc Ngữ (e.g., 'truyện', 'hoa', 'chúa thao')..." autofocus></div>
+      <div class="filter-buttons">
+        <button class="filter-btn active" data-view="grid">📱 Grid</button>
+        <button class="filter-btn" data-view="list">📋 List</button>
+        <button class="filter-btn" data-view="all">📚 All</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="output-section">
+    <div class="output-header">
+      <h2>📝 Converted Chữ Nôm</h2>
+      <div class="output-actions">
+        <button onclick="clearOutput()">🗑️ Clear</button>
+        <button onclick="copyOutput()">📋 Copy</button>
+        <button onclick="addAllOutput()">📚 Add All</button>
+      </div>
+    </div>
+    <div id="outputDisplay" class="output-modern">
+      <div class="output-empty"><span class="icon">✏️</span> Type Quốc Ngữ above to convert</div>
+    </div>
+  </div>
+
+  <div class="selected-section" id="selectedSection">
+    <div class="selected-label">📌 Selected Characters</div>
+    <div id="selectedDisplay" class="selected-modern"></div>
+    <div class="selected-actions">
+      <button class="btn-break" onclick="addColumnBreak()">📐 New Column</button>
+      <button class="clear-btn" id="clearSelected">🗑️ Clear All</button>
+      <div class="export-dropdown">
+        <button class="export-btn" id="exportBtn" onclick="toggleExportDropdown()" disabled>📄 Export ▼</button>
+        <div class="export-dropdown-content" id="exportDropdown">
+          <button onclick="exportAsPdf()">📕 PDF (Print)</button>
+          <button onclick="exportAsDoc()">📄 Word (.doc)</button>
+          <button onclick="exportAsDocx()">📝 Word (.docx)</button>
+          <button onclick="exportAsHtml()">🌐 HTML</button>
+          <button onclick="exportAsText()">📃 Plain Text</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-section">
+    <div class="results-header"><h2>📖 Results</h2><span class="result-count" id="resultCount">0 entries</span></div>
+    <div id="resultsContainer"><div class="loading"><div class="spinner"></div><p style="margin-top:16px;">Loading dictionary...</p></div></div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
